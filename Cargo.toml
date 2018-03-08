@@ -1,0 +1,8 @@
+[package]
+name = "curses_and_sdl"
+version = "0.1.0"
+authors = ["Terry Amato <terry.amato@mentice.com>"]
+
+[dependencies]
+easycurses = "0.9.0"
+sdl2 = "0.31.0"
