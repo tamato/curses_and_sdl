@@ -1,3 +1,5 @@
+// use platform::Console;
+
 // extern crate easycurses;
 
 // use easycurses::*;
@@ -74,8 +76,20 @@ use sdl2::rect::Rect;
 use sdl2::rect::Point;
 use std::time::Duration;
 
+
+struct SDLContext {
+    context: sdl2::Sdl,
+    video: sdl2::VideoSubsystem,
+    window: sdl2::video::Window,
+    timer: sdl2::TimerSubsystem,
+    event_pump: sdl2::EventPump,
+}
+
+
 fn main() {
+
     let sdl_context = sdl2::init().unwrap();
+
     let video_subsystem = sdl_context.video().unwrap();
 
     let window = video_subsystem.window("SDL2", 640, 480)
