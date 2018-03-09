@@ -3,8 +3,8 @@ pub trait ConsoleContext {
     fn do_everything(&self);
 }
 
-pub mod context_curses;
+mod context_curses;
 pub use self::context_curses::CursesContext;
 
-pub mod context_sdl;
+mod context_sdl;
 pub use self::context_sdl::SDLContext;
