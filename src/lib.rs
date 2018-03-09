@@ -1,6 +1,5 @@
-enum Actions {
-    MoveLeft,
-    MoveRight,
-    MoveUp,
-    MoveDown,
-}
+
+pub mod context;
+pub use self::context::{ConsoleContext, CursesContext, SDLContext};
+
+
