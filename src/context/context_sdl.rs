@@ -30,7 +30,7 @@ impl ConsoleContext for SDLContext {
 
         // animation sheet and extras are available from
         // https://opengameart.org/content/a-platformer-in-the-forest
-        let temp_surface = sdl2::surface::Surface::load_bmp(Path::new("../../assets/characters.bmp")).expect("Failed to load characters.bmp");
+        let temp_surface = sdl2::surface::Surface::load_bmp(Path::new("assets/characters.bmp")).expect("Failed to load characters.bmp");
         let texture = texture_creator.create_texture_from_surface(&temp_surface).expect("Failed to get texture from texture_creator");
 
         let frames_per_anim = 4;
