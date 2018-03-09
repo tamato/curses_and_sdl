@@ -79,8 +79,6 @@ impl ConsoleContext for CursesContext {
     }
 }
 
-
-
 /*************************
     SDL
 *************************/
@@ -92,9 +90,7 @@ use sdl2::keyboard::Keycode;
 use sdl2::rect::Rect;
 use sdl2::rect::Point;
 
-
 struct SDLContext {}
-
 impl ConsoleContext for SDLContext {
     fn do_everything(&self) {
         let sdl_context = sdl2::init().unwrap();
@@ -178,16 +174,15 @@ impl SDLContext {
 }
 
 use std::env;
-
 fn main() {
 
     let mut use_curses = false;
     for arguments in env::args() {
-        match arguments.as_str() {
+        match arguments.as_ref() {
             "-t" => use_curses = true,
             _ => {},
         }
-        println!("arg: {:?}", arguments);
+        // println!("arg: {:?}", arguments);
     }
 
     let _sdl_ctx = SDLContext::new();
