@@ -28,13 +28,11 @@ fn main() {
         return
     }
 
-    let _sdl_ctx = SDLContext::new();
-    let _curses_ctx = CursesContext::new();
-    let console_ctx;
+    let console_ctx: Box<ConsoleContext>;
     if use_curses {
-        console_ctx = Box::new(&_curses_ctx as &ConsoleContext);
+        console_ctx = Box::new(CursesContext::new());
     } else {
-        console_ctx = Box::new(&_sdl_ctx as &ConsoleContext);
+        console_ctx = Box::new(SDLContext::new());
     }
 
     console_ctx.do_everything();
