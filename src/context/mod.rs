@@ -1,6 +1,7 @@
-// https://stackoverflow.com/questions/26212397/references-to-traits-in-structs
 pub trait ConsoleContext {
     fn do_everything(&self);
+
+    // fn 
 }
 
 mod context_curses;

@@ -3,10 +3,11 @@ extern crate easycurses;
 use self::easycurses::*;
 
 use std::cmp::{max, min};
-use std::iter::repeat;
 use std::thread::sleep;
 use std::time::Instant;
 use std::time::Duration;
+
+use map_gen::{MapTileType, tcod_tutorial};
 
 use context::ConsoleContext;
 
@@ -28,7 +29,7 @@ impl ConsoleContext for CursesContext {
         easy.set_scrolling(true);
 
         // We need to know how wide our screen is.
-        let (_, mut col_count) = easy.get_row_col_count();
+        let (row_count, col_count) = easy.get_row_col_count();
 
         // Sadly we can't make this const since it has to unwrap and all that, but
         // ideally this could be a const. You could use lazy_static I guess if you
@@ -37,29 +38,52 @@ impl ConsoleContext for CursesContext {
             .checked_div(60)
             .expect("failed when rhs!=0, what?");
 
+
+        let map = tcod_tutorial::map_generation(1 as u32, 1 as u32);
+        let tiles = ASCII::new();
+
         // We start at an arbitrary position.
-        let mut position = 5;
+        let mut pos_x = 5;
+        let mut pos_y = 5;
+        let mut prev_x = 5;
+        let mut prev_y = 5;
         loop {
             let top_of_loop = Instant::now();
             // Gather/process any pending input
             match easy.get_input() {
-                Some(Input::KeyLeft) => position = max(0, position - 1),
-                Some(Input::KeyRight) => position = min(col_count - 1, position + 1),
-                Some(Input::KeyResize) => {
-                    col_count = easy.get_row_col_count().1;
-                    position = min(col_count - 1, position);
-                }
+                Some(Input::KeyLeft) => pos_x = max(1, pos_x - 1),
+                Some(Input::KeyRight) => pos_x = min(col_count - 2, pos_x + 1),
+                Some(Input::KeyUp) => pos_y = max(1, pos_y - 1),
+                Some(Input::KeyDown) => pos_y = min(row_count - 2, pos_y + 1),
                 Some(Input::Character(c)) => {
                     match c {
                         'q' | 'Q' => break,
+                        'e' => pos_y = max(1, pos_y - 1),
+                        'd' => pos_y = min(row_count - 2, pos_y + 1), 
+                        'f' => pos_x = min(col_count - 2, pos_x + 1),
+                        's' => pos_x = max(1, pos_x - 1),
+                        'r' => {
+                            pos_x = min(col_count - 2, pos_x + 1); 
+                            pos_y = max(1, pos_y - 2);
+                        }
+                        'w' => {
+                            pos_x = max(1, pos_x - 2);
+                            pos_y = max(1, pos_y - 2);
+                        }
+                        'c' => {
+                            pos_x = max(1, pos_x - 1);
+                            pos_y = min(row_count - 2, pos_y + 1); 
+                        }
+                        'v' => {
+                            pos_y = min(row_count - 2, pos_y + 1); 
+                            pos_x = min(col_count - 2, pos_x + 1);
+                        }
                         ch => println!("Key hit: {:?}", ch),
                     }
                 }
                 Some(other) => println!("Unknown: {:?}", other),
                 None => (),
             }
-            // Compute what we'll display.
-            let output = repeat('#').take(position as usize).collect::<String>();
 
             // Sleep a bit if we need to. This actually sleeps a little longer than
             // just the right time because it doesn't account for the display time
@@ -71,9 +95,72 @@ impl ConsoleContext for CursesContext {
             }
 
             // Display
-            easy.print("\n");
-            easy.print(&output);
+            easy.move_rc(prev_y, prev_x);
+            easy.print_char(' ');
+            easy.move_rc(pos_y, pos_x);
+            easy.print_char('@');
+            prev_x = pos_x;
+            prev_y = pos_y;
+
+            map.render( |w, _, data| {
+                // data is a 1 dim vector, but we treat it as 2d because it make far more sense
+                for (idx, tile) in data.iter().enumerate() {
+                    let col_count = *w as usize;
+                    let map_row = idx / col_count;
+                    let map_col = idx % col_count;
+
+                    easy.move_rc(map_row as i32, map_col as i32);
+                    easy.print_char(tiles[ *tile ]);
+                }
+            });
+
             easy.refresh();
         }
     }
 }
+
+struct ASCII {
+    floor: char,
+    wall: char,
+    chasm: char,
+    water: char,
+}
+
+impl ASCII {
+    fn new() -> Self {
+        ASCII {
+            floor: '.',
+            wall: '#',
+            chasm: 'X',
+            water: '~',
+        }
+    }
+}
+
+use std::ops::Index;
+impl Index<MapTileType> for ASCII {
+    type Output = char;
+    fn index(&self, index: MapTileType) -> &Self::Output {
+        match index {
+            MapTileType::Floor => &self.floor,
+            MapTileType::Wall => &self.wall,
+            MapTileType::Chasm => &self.chasm,
+            MapTileType::Water => &self.water,
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
