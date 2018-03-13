@@ -39,44 +39,42 @@ impl ConsoleContext for CursesContext {
             .expect("failed when rhs!=0, what?");
 
 
-        let map = tcod_tutorial::map_generation(1 as u32, 1 as u32);
+        let map = tcod_tutorial::map_generation((col_count-2) as usize, (row_count-2) as usize);
         let tiles = ASCII::new();
 
         // We start at an arbitrary position.
         let mut pos_x = 5;
         let mut pos_y = 5;
-        let mut prev_x = 5;
-        let mut prev_y = 5;
         loop {
             let top_of_loop = Instant::now();
             // Gather/process any pending input
             match easy.get_input() {
                 Some(Input::KeyLeft) => pos_x = max(1, pos_x - 1),
-                Some(Input::KeyRight) => pos_x = min(col_count - 2, pos_x + 1),
+                Some(Input::KeyRight) => pos_x = min(col_count - 3, pos_x + 1),
                 Some(Input::KeyUp) => pos_y = max(1, pos_y - 1),
-                Some(Input::KeyDown) => pos_y = min(row_count - 2, pos_y + 1),
+                Some(Input::KeyDown) => pos_y = min(row_count - 3, pos_y + 1),
                 Some(Input::Character(c)) => {
                     match c {
                         'q' | 'Q' => break,
-                        'e' => pos_y = max(1, pos_y - 1),
-                        'd' => pos_y = min(row_count - 2, pos_y + 1), 
-                        'f' => pos_x = min(col_count - 2, pos_x + 1),
-                        's' => pos_x = max(1, pos_x - 1),
+                        'e' => pos_y = max(3, pos_y - 1),
+                        'd' => pos_y = min(row_count - 3, pos_y + 1), 
+                        'f' => pos_x = min(col_count - 3, pos_x + 1),
+                        's' => pos_x = max(3, pos_x - 1),
                         'r' => {
-                            pos_x = min(col_count - 2, pos_x + 1); 
-                            pos_y = max(1, pos_y - 2);
+                            pos_x = min(col_count - 3, pos_x + 1); 
+                            pos_y = max(3, pos_y - 1);
                         }
                         'w' => {
-                            pos_x = max(1, pos_x - 2);
-                            pos_y = max(1, pos_y - 2);
+                            pos_x = max(3, pos_x - 1);
+                            pos_y = max(3, pos_y - 1);
                         }
                         'c' => {
-                            pos_x = max(1, pos_x - 1);
-                            pos_y = min(row_count - 2, pos_y + 1); 
+                            pos_x = max(3, pos_x - 1);
+                            pos_y = min(row_count - 3, pos_y + 1); 
                         }
                         'v' => {
-                            pos_y = min(row_count - 2, pos_y + 1); 
-                            pos_x = min(col_count - 2, pos_x + 1);
+                            pos_y = min(row_count - 3, pos_y + 1); 
+                            pos_x = min(col_count - 3, pos_x + 1);
                         }
                         ch => println!("Key hit: {:?}", ch),
                     }
@@ -95,13 +93,6 @@ impl ConsoleContext for CursesContext {
             }
 
             // Display
-            easy.move_rc(prev_y, prev_x);
-            easy.print_char(' ');
-            easy.move_rc(pos_y, pos_x);
-            easy.print_char('@');
-            prev_x = pos_x;
-            prev_y = pos_y;
-
             map.render( |w, _, data| {
                 // data is a 1 dim vector, but we treat it as 2d because it make far more sense
                 for (idx, tile) in data.iter().enumerate() {
@@ -114,6 +105,8 @@ impl ConsoleContext for CursesContext {
                 }
             });
 
+            easy.move_rc(pos_y, pos_x);
+            easy.print_char('@');
             easy.refresh();
         }
     }

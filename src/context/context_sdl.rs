@@ -8,6 +8,11 @@ use self::sdl2::rect::Rect;
 use self::sdl2::rect::Point;
 
 use context::ConsoleContext;
+use map_gen::{MapTileType, tcod_tutorial};
+
+const WINDOW_WIDTH: u32 = 640;
+const WINDOW_HEIGHT: u32 = 480;
+const TILE_SIZE: i32 = 32;
 
 pub struct SDLContext {}
 impl ConsoleContext for SDLContext {
@@ -15,7 +20,7 @@ impl ConsoleContext for SDLContext {
         let sdl_context = sdl2::init().expect("Failed to create sdl_context");
         let video_subsystem = sdl_context.video().expect("Failed to get video_subsystem");
 
-        let window = video_subsystem.window("SDL2", 640, 480)
+        let window = video_subsystem.window("SDL2", WINDOW_WIDTH, WINDOW_HEIGHT)
             .position_centered().build().expect("Failed to acquire window from video_subsystem");
 
         let mut canvas = window.into_canvas()
@@ -28,28 +33,14 @@ impl ConsoleContext for SDLContext {
 
         let mut event_pump = sdl_context.event_pump().expect("Failed to get event_pump");
 
-        // animation sheet and extras are available from
-        // https://opengameart.org/content/a-platformer-in-the-forest
-        let temp_surface = sdl2::surface::Surface::load_bmp(Path::new("assets/characters.bmp")).expect("Failed to load characters.bmp");
-        let texture = texture_creator.create_texture_from_surface(&temp_surface).expect("Failed to get texture from texture_creator");
+        let surface64x64 = sdl2::surface::Surface::load_bmp(Path::new("assets/tiles/32x32-less-noise.bmp")).expect("Failed to load 64x64");
+        let texture64 = texture_creator.create_texture_from_surface(&surface64x64).expect("Failed to get 64 texture");
+        let tile_size = 32;
 
-        let frames_per_anim = 4;
-        let sprite_tile_size = (32,32);
-
-        // Baby - walk animation
-        let mut source_rect_0 = Rect::new(0, 0, sprite_tile_size.0, sprite_tile_size.0);
-        let mut dest_rect_0 = Rect::new(0, 0, sprite_tile_size.0*4, sprite_tile_size.0*4);
-        dest_rect_0.center_on(Point::new(-64,120));
-
-        // King - walk animation
-        let mut source_rect_1 = Rect::new(0, 32, sprite_tile_size.0, sprite_tile_size.0);
-        let mut dest_rect_1 = Rect::new(0, 32, sprite_tile_size.0*4, sprite_tile_size.0*4);
-        dest_rect_1.center_on(Point::new(0,240));
-
-        // Soldier - walk animation
-        let mut source_rect_2 = Rect::new(0, 64, sprite_tile_size.0, sprite_tile_size.0);
-        let mut dest_rect_2 = Rect::new(0, 64, sprite_tile_size.0*4, sprite_tile_size.0*4);
-        dest_rect_2.center_on(Point::new(440,360));
+        let win_width = ((WINDOW_WIDTH) / tile_size) as usize;
+        let win_height = ((WINDOW_HEIGHT) / tile_size) as usize;
+        let map = tcod_tutorial::map_generation(win_width, win_height);
+        let tiles = TILE::new();
 
         let mut running = true;
         while running {
@@ -58,29 +49,33 @@ impl ConsoleContext for SDLContext {
                     Event::Quit {..} | Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
                         running = false;
                     },
+                    Event::KeyDown {keycode: Some(Keycode::H), ..} => {
+                        
+                    },
+                    Event::KeyDown {keycode: Some(Keycode::L), ..} => {
+
+                    },
                     _ => {}
                 }
             }
 
             let ticks = timer.ticks() as i32;
-
-            // set the current frame for time
-            source_rect_0.set_x(32 * ((ticks / 100) % frames_per_anim));
-            dest_rect_0.set_x(1 * ((ticks / 14) % 768) - 128);
-
-            source_rect_1.set_x(32 * ((ticks / 100) % frames_per_anim));
-            dest_rect_1.set_x((1 * ((ticks / 12) % 768) - 672) * -1);
-
-            source_rect_2.set_x(32 * ((ticks / 100) % frames_per_anim));
-            dest_rect_2.set_x(1 * ((ticks / 10) % 768) - 128);
-
             canvas.clear();
-            // copy the frame to the canvas
-            canvas.copy_ex(&texture, Some(source_rect_0), Some(dest_rect_0), 0.0, None, false, false).expect("Failed to copy source 0");
-            canvas.copy_ex(&texture, Some(source_rect_1), Some(dest_rect_1), 0.0, None, true, false).expect("Failed to copy source 1");
-            canvas.copy_ex(&texture, Some(source_rect_2), Some(dest_rect_2), 0.0, None, false, false).expect("Failed to copy source 2");
-            canvas.present();
 
+            // Display
+            map.render( |w, _, data| {
+                // data is a 1 dim vector, but we treat it as 2d because it make far more sense
+                for (idx, tile) in data.iter().enumerate() {
+                    let width = *w as usize;
+                    let y = idx / width;
+                    let x = idx % width;
+                    let dest = Rect::new( (x * tile_size as usize) as i32, (y * tile_size as usize) as i32, tile_size, tile_size);
+
+                    canvas.copy_ex(&texture64, Some(tiles[ *tile ]), Some(dest), 0.0, None, false, false).expect("Failed to set map");
+                }
+            });
+
+            canvas.present();
             ::std::thread::sleep(Duration::from_millis(100));
         }
     }        
@@ -92,6 +87,35 @@ impl SDLContext {
     }
 }
 
+struct TILE {
+    floor: Rect,
+    wall: Rect,
+    chasm: Rect,
+    water: Rect,
+}
 
+impl TILE {
+    fn new() -> Self {
+        TILE {
+            floor: Rect::new( 0, TILE_SIZE * 23, TILE_SIZE as u32, TILE_SIZE as u32),
+            wall: Rect::new( 0, TILE_SIZE * 22, TILE_SIZE as u32, TILE_SIZE as u32),
+            chasm: Rect::new( 0, TILE_SIZE * 23, TILE_SIZE as u32, TILE_SIZE as u32),
+            water: Rect::new( 0, TILE_SIZE * 23, TILE_SIZE as u32, TILE_SIZE as u32),
+        }
+    }
+}
+
+use std::ops::Index;
+impl Index<MapTileType> for TILE {
+    type Output = Rect;
+    fn index(&self, index: MapTileType) -> &Self::Output {
+        match index {
+            MapTileType::Floor => &self.floor,
+            MapTileType::Wall => &self.wall,
+            MapTileType::Chasm => &self.chasm,
+            MapTileType::Water => &self.water,
+        }
+    }
+}
 
 
