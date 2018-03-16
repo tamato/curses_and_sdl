@@ -10,6 +10,8 @@ use self::sdl2::rect::Point;
 use context::ConsoleContext;
 use map_gen::{MapTileType, tcod_tutorial};
 
+use std::cmp::{max, min};
+
 const WINDOW_WIDTH: u32 = 640;
 const WINDOW_HEIGHT: u32 = 480;
 const TILE_SIZE: i32 = 32;
@@ -42,6 +44,10 @@ impl ConsoleContext for SDLContext {
         let map = tcod_tutorial::map_generation(win_width, win_height);
         let tiles = TILE::new();
 
+        let mut player_rect = Rect::new(TILE_SIZE * 19, TILE_SIZE * 3, TILE_SIZE as u32, TILE_SIZE as u32);
+        let mut player_x = 5 as i32;
+        let mut player_y = 5 as i32;
+
         let mut running = true;
         while running {
             for event in event_pump.poll_iter() {
@@ -49,11 +55,20 @@ impl ConsoleContext for SDLContext {
                     Event::Quit {..} | Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
                         running = false;
                     },
+                    Event::KeyDown {keycode: Some(Keycode::Q), ..} => {
+                        running = false;
+                    },
+                    Event::KeyDown {keycode: Some(Keycode::J), ..} => {
+                        player_y = min( (win_height - 2) as i32, player_y + 1);
+                    },
+                    Event::KeyDown {keycode: Some(Keycode::K), ..} => {
+                        player_y = max(1, player_y - 1);
+                    },
                     Event::KeyDown {keycode: Some(Keycode::H), ..} => {
-                        
+                        player_x = max(1, player_x - 1);
                     },
                     Event::KeyDown {keycode: Some(Keycode::L), ..} => {
-
+                        player_x = min(win_width as i32 - 2, player_x + 1);
                     },
                     _ => {}
                 }
@@ -74,6 +89,9 @@ impl ConsoleContext for SDLContext {
                     canvas.copy_ex(&texture64, Some(tiles[ *tile ]), Some(dest), 0.0, None, false, false).expect("Failed to set map");
                 }
             });
+
+            let player_dest = Rect::new(player_x * TILE_SIZE, player_y * TILE_SIZE, TILE_SIZE as u32, TILE_SIZE as u32);
+            canvas.copy_ex(&texture64, Some(player_rect), Some(player_dest), 0.0, None, false, false).expect("Failed to load player");
 
             canvas.present();
             ::std::thread::sleep(Duration::from_millis(100));
