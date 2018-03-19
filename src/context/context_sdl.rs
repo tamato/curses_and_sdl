@@ -44,7 +44,7 @@ impl ConsoleContext for SDLContext {
         let map = tcod_tutorial::map_generation(win_width, win_height);
         let tiles = TILE::new();
 
-        let mut player_rect = Rect::new(TILE_SIZE * 19, TILE_SIZE * 3, TILE_SIZE as u32, TILE_SIZE as u32);
+        let player_rect = Rect::new(TILE_SIZE * 19, TILE_SIZE * 3, TILE_SIZE as u32, TILE_SIZE as u32);
         let mut player_x = 5 as i32;
         let mut player_y = 5 as i32;
 
@@ -55,21 +55,16 @@ impl ConsoleContext for SDLContext {
                     Event::Quit {..} | Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
                         running = false;
                     },
-                    Event::KeyDown {keycode: Some(Keycode::Q), ..} => {
-                        running = false;
-                    },
-                    Event::KeyDown {keycode: Some(Keycode::J), ..} => {
-                        player_y = min( (win_height - 2) as i32, player_y + 1);
-                    },
-                    Event::KeyDown {keycode: Some(Keycode::K), ..} => {
-                        player_y = max(1, player_y - 1);
-                    },
-                    Event::KeyDown {keycode: Some(Keycode::H), ..} => {
-                        player_x = max(1, player_x - 1);
-                    },
-                    Event::KeyDown {keycode: Some(Keycode::L), ..} => {
-                        player_x = min(win_width as i32 - 2, player_x + 1);
-                    },
+                    Event::KeyDown {keycode: Some(key), ..} => {
+                        match key {
+                            Keycode::Q => running = false,
+                            Keycode::E | Keycode::K => player_y = max(1, player_y - 1),
+                            Keycode::D | Keycode::J => player_y = min( (win_height - 2) as i32, player_y + 1),
+                            Keycode::F | Keycode::L => player_x = min(win_width as i32 - 2, player_x + 1),
+                            Keycode::S | Keycode::H => player_x = max(1, player_x - 1),
+                            _ => {}
+                        }
+                    }
                     _ => {}
                 }
             }
