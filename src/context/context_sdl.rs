@@ -18,7 +18,7 @@ const TILE_WIDTH: i32 = 12;
 const TILE_HEIGHT: i32 = 22;
 
 const WINDOW_WIDTH: u32 = 53 * TILE_WIDTH as u32;
-const WINDOW_HEIGHT: u32 = 22 * TILE_HEIGHT as u32;
+const WINDOW_HEIGHT: u32 = 12 * TILE_HEIGHT as u32;
 
 pub struct SDLContext {}
 impl ConsoleContext for SDLContext {
@@ -46,7 +46,7 @@ impl ConsoleContext for SDLContext {
 
         let _image_context = sdl2::image::init(INIT_PNG).expect("failed to get image context");
 
-        let texture22 = texture_creator.load_texture(Path::new("assets/font22.png"))
+        let mut texture22 = texture_creator.load_texture(Path::new("assets/font22.png"))
             .expect("Failed to load 22x22");
         let tile_width = TILE_WIDTH as u32;
         let tile_height = TILE_HEIGHT as u32;
@@ -84,6 +84,8 @@ impl ConsoleContext for SDLContext {
             let ticks = timer.ticks() as i32;
             canvas.clear();
 
+            texture22.set_color_mod(255, 50, 50);
+
             // Display
             map.render( |w, _, data| {
                 // data is a 1 dim vector, but we treat it as 2d because it make far more sense
@@ -98,6 +100,9 @@ impl ConsoleContext for SDLContext {
             });
 
             let player_dest = Rect::new(player_x * TILE_WIDTH, player_y * TILE_HEIGHT, TILE_WIDTH as u32, TILE_HEIGHT as u32);
+
+            texture22.set_color_mod(255, 255, 255);
+            texture22.set_alpha_mod(255);
             canvas.copy_ex(&texture22, Some(player_rect), Some(player_dest), 0.0, None, false, false).expect("Failed to load player");
 
             canvas.present();
