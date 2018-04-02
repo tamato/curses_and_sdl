@@ -84,7 +84,7 @@ impl ConsoleContext for SDLContext {
             let ticks = timer.ticks() as i32;
             canvas.clear();
 
-            texture22.set_color_mod(255, 50, 50);
+            texture22.set_color_mod(255, 255, 255);
 
             // Display
             map.render( |w, _, data| {
@@ -93,13 +93,25 @@ impl ConsoleContext for SDLContext {
                     let width = *w as usize;
                     let y = idx / width;
                     let x = idx % width;
-                    let dest = Rect::new( (x * tile_width as usize) as i32, (y * tile_width as usize) as i32, tile_width, tile_height);
+                    let dest = Rect::new( 
+                        (x * tile_width as usize) as i32, 
+                        (y * tile_height as usize) as i32, 
+                        tile_width, 
+                        tile_height);
 
-                    canvas.copy_ex(&texture22, Some(tiles[ *tile ]), Some(dest), 0.0, None, false, false).expect("Failed to set map");
+                    canvas.copy_ex(&texture22, Some(tiles[ *tile ]), Some(dest), 0.0, None, false, false)
+                        .expect("Failed to set map");
                 }
             });
 
             let player_dest = Rect::new(player_x * TILE_WIDTH, player_y * TILE_HEIGHT, TILE_WIDTH as u32, TILE_HEIGHT as u32);
+
+
+            // blank out where the character is
+            let blank_rect = Rect::new(TILE_WIDTH *11, TILE_HEIGHT * 13, TILE_WIDTH as u32, TILE_HEIGHT as u32);
+            texture22.set_color_mod(0,0,0);
+            canvas.copy_ex(&texture22, Some(blank_rect), Some(player_dest), 0.0, None, false, false).expect("Failed to load player");
+
 
             texture22.set_color_mod(255, 255, 255);
             texture22.set_alpha_mod(255);
