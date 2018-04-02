@@ -5,7 +5,6 @@ extern crate sdl2;
 use self::sdl2::event::Event;
 use self::sdl2::keyboard::Keycode;
 use self::sdl2::rect::Rect;
-use self::sdl2::rect::Point;
 
 use self::sdl2::image::{LoadTexture, INIT_PNG};
 
@@ -17,8 +16,11 @@ use std::cmp::{max, min};
 const TILE_WIDTH: i32 = 12;
 const TILE_HEIGHT: i32 = 22;
 
-const WINDOW_WIDTH: u32 = 53 * TILE_WIDTH as u32;
-const WINDOW_HEIGHT: u32 = 12 * TILE_HEIGHT as u32;
+const MAP_WIDTH: usize = 53;
+const MAP_HEIGHT: usize = 12;
+
+const GAME_WINDOW_WIDTH: u32 =  1024;
+const GAME_WINDOW_HEIGHT: u32 = 800;
 
 pub struct SDLContext {}
 impl ConsoleContext for SDLContext {
@@ -26,7 +28,7 @@ impl ConsoleContext for SDLContext {
         let sdl_context = sdl2::init().expect("Failed to create sdl_context");
         let video_subsystem = sdl_context.video().expect("Failed to get video_subsystem");
 
-        let window = video_subsystem.window("SDL2", WINDOW_WIDTH, WINDOW_HEIGHT)
+        let window = video_subsystem.window("SDL2", GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT)
             .position_centered()
             .build()
             .expect("Failed to acquire window from video_subsystem");
@@ -40,7 +42,7 @@ impl ConsoleContext for SDLContext {
 
         canvas.set_draw_color(sdl2::pixels::Color::RGBA(0,0,0,255));
 
-        let mut timer = sdl_context.timer().expect("Failed to get timer");
+        // let timer = sdl_context.timer().expect("Failed to get timer");
 
         let mut event_pump = sdl_context.event_pump().expect("Failed to get event_pump");
 
@@ -51,9 +53,7 @@ impl ConsoleContext for SDLContext {
         let tile_width = TILE_WIDTH as u32;
         let tile_height = TILE_HEIGHT as u32;
 
-        let win_width = ((WINDOW_WIDTH) / tile_width) as usize;
-        let win_height = ((WINDOW_HEIGHT) / tile_height) as usize;
-        let map = tcod_tutorial::map_generation(win_width, win_height);
+        let map = tcod_tutorial::map_generation(MAP_WIDTH, MAP_HEIGHT);
         let tiles = TILE::new();
 
         let player_rect = Rect::new(TILE_WIDTH * 0, TILE_HEIGHT * 4, TILE_WIDTH as u32, TILE_HEIGHT as u32);
@@ -71,8 +71,8 @@ impl ConsoleContext for SDLContext {
                         match key {
                             Keycode::Q => running = false,
                             Keycode::E | Keycode::K => player_y = max(1, player_y - 1),
-                            Keycode::D | Keycode::J => player_y = min( (win_height - 2) as i32, player_y + 1),
-                            Keycode::F | Keycode::L => player_x = min(win_width as i32 - 2, player_x + 1),
+                            Keycode::D | Keycode::J => player_y = min( (MAP_HEIGHT - 2) as i32, player_y + 1),
+                            Keycode::F | Keycode::L => player_x = min(MAP_WIDTH as i32 - 2, player_x + 1),
                             Keycode::S | Keycode::H => player_x = max(1, player_x - 1),
                             _ => {}
                         }
@@ -81,7 +81,6 @@ impl ConsoleContext for SDLContext {
                 }
             }
 
-            let ticks = timer.ticks() as i32;
             canvas.clear();
 
             texture22.set_color_mod(255, 255, 255);
