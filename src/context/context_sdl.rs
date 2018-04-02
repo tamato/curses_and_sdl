@@ -10,6 +10,7 @@ use self::sdl2::image::{LoadTexture, INIT_PNG};
 
 use context::ConsoleContext;
 use map_gen::{MapTileType, tcod_tutorial};
+use {World, CommandMoveTo};
 
 use std::cmp::{max, min};
 
@@ -60,8 +61,12 @@ impl ConsoleContext for SDLContext {
         let mut player_x = 5 as i32;
         let mut player_y = 5 as i32;
 
+        let mut world = World::new();
+        world.add_char(0, player_x, player_y);
+
         let mut running = true;
         while running {
+            let mut got_input = false;
             for event in event_pump.poll_iter() {
                 match event {
                     Event::Quit {..} | Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
@@ -70,16 +75,21 @@ impl ConsoleContext for SDLContext {
                     Event::KeyDown {keycode: Some(key), ..} => {
                         match key {
                             Keycode::Q => running = false,
-                            Keycode::E | Keycode::K => player_y = max(1, player_y - 1),
-                            Keycode::D | Keycode::J => player_y = min( (MAP_HEIGHT - 2) as i32, player_y + 1),
-                            Keycode::F | Keycode::L => player_x = min(MAP_WIDTH as i32 - 2, player_x + 1),
-                            Keycode::S | Keycode::H => player_x = max(1, player_x - 1),
+                            Keycode::E | Keycode::K => player_y = { got_input=true; max(1, player_y - 1)},
+                            Keycode::D | Keycode::J => player_y = { got_input=true; min( (MAP_HEIGHT - 2) as i32, player_y + 1)},
+                            Keycode::F | Keycode::L => player_x = { got_input=true; min(MAP_WIDTH as i32 - 2, player_x + 1)},
+                            Keycode::S | Keycode::H => player_x = { got_input=true; max(1, player_x - 1)},
                             _ => {}
                         }
                     }
                     _ => {}
                 }
             }
+
+            if got_input == true {
+                world.add_command(Box::new(CommandMoveTo::new(0, player_x, player_y)));
+            }
+            world.handle_commands();
 
             canvas.clear();
 
@@ -103,8 +113,8 @@ impl ConsoleContext for SDLContext {
                 }
             });
 
-            let player_dest = Rect::new(player_x * TILE_WIDTH, player_y * TILE_HEIGHT, TILE_WIDTH as u32, TILE_HEIGHT as u32);
-
+            let (px, py) = world.player_coord();
+            let player_dest = Rect::new(px * TILE_WIDTH, py * TILE_HEIGHT, TILE_WIDTH as u32, TILE_HEIGHT as u32);
 
             // blank out where the character is
             let blank_rect = Rect::new(TILE_WIDTH *11, TILE_HEIGHT * 13, TILE_WIDTH as u32, TILE_HEIGHT as u32);
