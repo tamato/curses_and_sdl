@@ -5,43 +5,6 @@ pub use self::context::{ConsoleContext, CursesContext, SDLContext};
 mod map_gen;
 pub use self::map_gen::{MapData, MapTileType};
 
-pub trait Command {
-    fn handle(&self, &mut World);
-    fn cmd_clone(&self) -> Box<Command>;
-}
-
-// the move command does not do any error checking
-// that is done by a different command
-#[derive(Clone, Copy)]
-pub struct CommandMoveTo {
-    // priority: u32,
-
-    object: u32,
-    destination_x: i32,
-    destination_y: i32,
-}
-
-impl CommandMoveTo {
-    pub fn new(who: u32, x: i32, y: i32) -> Self {
-        CommandMoveTo {
-            object: who,
-            destination_x: x,
-            destination_y: y,
-        }
-    }
-}
- impl Command for CommandMoveTo {
-    fn handle(&self, world: &mut World) {
-        if self.object == 0 {
-            *(world.pos_x.get_mut(&self.object).unwrap()) = self.destination_x;
-            *(world.pos_y.get_mut(&self.object).unwrap()) = self.destination_y;
-        }
-    }
-    fn cmd_clone(&self) -> Box<Command> {
-        Box::new( (*self).clone())
-    }
-}
-
 // https://users.rust-lang.org/t/solved-is-it-possible-to-clone-a-boxed-trait-object/1714/6
 // https://users.rust-lang.org/t/understanding-trait-composition-and-box/8844/6
 impl Clone for Box<Command> {
@@ -52,75 +15,91 @@ impl Clone for Box<Command> {
 
 use std::collections::HashMap;
 pub struct World {
-
-    pos_x: HashMap<u32, i32>,
-    pos_y: HashMap<u32, i32>,
-
-    commands: Box<Command>,
-
     entities: Vec<u32>,
 }
 
 impl World {
     fn new () -> Self {
         World {
-            pos_x: HashMap::new(),
-            pos_y: HashMap::new(),
-            commands: Box::new(CommandMoveTo::new(0,0,0)),
             entities: Vec::new(),
         }
-    }
-    fn handle_commands(&mut self) {
-        let cmd = self.commands.clone();
-        cmd.handle(self);
-
-        self.commands = Box::new(CommandMoveTo::new(0,0,0));
-    }
-
-    fn add_char(&mut self, id: u32, x: i32, y: i32) {
-        self.pos_x.entry(id).or_insert(x);
-        self.pos_y.entry(id).or_insert(y);
-    }
-
-    fn add_command(&mut self, cmd: Box<Command>) {
-        self.commands = cmd;
-    }
-
-    fn player_coord(&mut self) -> (i32, i32) {
-        (*(self.pos_x.entry(0).or_insert(0)), *(self.pos_y.entry(0).or_insert(0)))
     }
 }
 
 
 extern crate sdl2;
 use sdl2::rect::Point;
-struct ResourceCollection {
-    postions: HashMap<u32, Point>,
+pub struct ResourceCollection {
+    positions: HashMap<u32, Point>,
+    dummy: HashMap<u32, i32>,
 }
 
 impl ResourceCollection {
     fn new() -> Self {
         ResourceCollection {
-            postions: HashMap::new(),
+            positions: HashMap::new(),
+            dummy: HashMap::new(),
         }
     }
 
     fn add(&mut self, ent: u32, data: Point) {
-        self.postions.insert(ent, data);
+        self.positions.insert(ent, data);
+    }
+
+    fn add2(&mut self, ent: u32, data: i32) {
+        self.dummy.insert(ent, data);
     }
 }
 
-struct CommandCollection {
-    cmd_move: HashMap<i32, CommandMoveTo>,
+pub struct CommandCollection {
+    cmd_move: Vec<CommandMoveTo>,
 }
 
 impl CommandCollection {
     fn new() -> Self {
         CommandCollection {
-            cmd_move: HashMap::new(),
+            cmd_move: Vec::new(),
+        }
+    }
+
+    fn add(&mut self, data: CommandMoveTo) {
+        self.cmd_move.push(data);
+    }
+}
+
+pub trait Command {
+    fn handle(&self, &mut ResourceCollection);
+    fn cmd_clone(&self) -> Box<Command>;
+}
+
+// the move command does not do any error checking
+// that is done by a different command
+#[derive(Clone, Copy)]
+pub struct CommandMoveTo {
+    // priority: u32,
+
+    object: u32,
+    destination: Point,
+}
+
+impl CommandMoveTo {
+    pub fn new(who: u32, x: i32, y: i32) -> Self {
+        CommandMoveTo {
+            object: who,
+            destination: Point::new(x,y),
         }
     }
 }
 
-
+impl Command for CommandMoveTo {
+    fn handle(&self, res: &mut ResourceCollection) {
+        if self.object == 0 {
+            // get the position resource and modify to new value.
+            res.positions[&self.object] = self.destination;
+        }
+    }
+    fn cmd_clone(&self) -> Box<Command> {
+        Box::new( (*self).clone())
+    }
+}
 

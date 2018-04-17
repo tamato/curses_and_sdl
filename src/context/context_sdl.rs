@@ -67,7 +67,7 @@ impl ConsoleContext for SDLContext {
         let mut player_y = 5 as i32;
 
         let mut world = World::new();
-        world.add_char(0, player_x, player_y);
+        // world.add_char(0, player_x, player_y);
         resources.add(0, Point::new(player_x, player_y));
 
         let mut running = true;
@@ -93,9 +93,10 @@ impl ConsoleContext for SDLContext {
             }
 
             if got_input == true {
-                world.add_command(Box::new(CommandMoveTo::new(0, player_x, player_y)));
+                // world.add_command(CommandMoveTo::create((0, Point::new(player_x, player_y))));
+                commands.add(CommandMoveTo::new(0, player_x, player_y));
             }
-            world.handle_commands();
+            // world.handle_commands();
 
             canvas.clear();
 
@@ -119,8 +120,8 @@ impl ConsoleContext for SDLContext {
                 }
             });
 
-            let (px, py) = world.player_coord();
-            let player_dest = Rect::new(px * TILE_WIDTH, py * TILE_HEIGHT, TILE_WIDTH as u32, TILE_HEIGHT as u32);
+            // let player_coord = world.player_coord();
+            let player_dest = Rect::new(0 * TILE_WIDTH, 0 * TILE_HEIGHT, TILE_WIDTH as u32, TILE_HEIGHT as u32);
 
             // blank out where the character is
             let blank_rect = Rect::new(TILE_WIDTH *11, TILE_HEIGHT * 13, TILE_WIDTH as u32, TILE_HEIGHT as u32);
@@ -174,5 +175,4 @@ impl Index<MapTileType> for TILE {
         }
     }
 }
-
 
