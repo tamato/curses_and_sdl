@@ -69,6 +69,7 @@ impl CommandCollection {
 
 pub trait Command {
     fn handle(&self, &mut ResourceCollection);
+    // fn handle(&self, &mut)
     fn cmd_clone(&self) -> Box<Command>;
 }
 
@@ -93,10 +94,7 @@ impl CommandMoveTo {
 
 impl Command for CommandMoveTo {
     fn handle(&self, res: &mut ResourceCollection) {
-        if self.object == 0 {
-            // get the position resource and modify to new value.
-            res.positions[&self.object] = self.destination;
-        }
+        *res.positions.get_mut(&0).unwrap() = self.destination;
     }
     fn cmd_clone(&self) -> Box<Command> {
         Box::new( (*self).clone())
