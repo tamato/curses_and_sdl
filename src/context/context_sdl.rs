@@ -4,13 +4,13 @@ use std::time::Duration;
 extern crate sdl2;
 use self::sdl2::event::Event;
 use self::sdl2::keyboard::Keycode;
-use self::sdl2::rect::Rect;
+use self::sdl2::rect::{Rect, Point};
 
 use self::sdl2::image::{LoadTexture, INIT_PNG};
 
 use context::ConsoleContext;
 use map_gen::{MapTileType, tcod_tutorial};
-use {World, CommandMoveTo};
+use {World, CommandMoveTo, ResourceCollection, CommandCollection};
 
 use std::cmp::{max, min};
 
@@ -26,6 +26,11 @@ const GAME_WINDOW_HEIGHT: u32 = 800;
 pub struct SDLContext {}
 impl ConsoleContext for SDLContext {
     fn do_everything(&self) {
+
+        let mut resources = ResourceCollection::new();
+        let mut commands = CommandCollection::new();
+
+
         let sdl_context = sdl2::init().expect("Failed to create sdl_context");
         let video_subsystem = sdl_context.video().expect("Failed to get video_subsystem");
 
@@ -63,6 +68,7 @@ impl ConsoleContext for SDLContext {
 
         let mut world = World::new();
         world.add_char(0, player_x, player_y);
+        resources.add(0, Point::new(player_x, player_y));
 
         let mut running = true;
         while running {

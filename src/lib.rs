@@ -30,8 +30,9 @@ impl CommandMoveTo {
         }
     }
 }
- impl Command for CommandMoveTo {fn handle(&self, world: &mut World) {
-        if self.object == world.player_id {
+ impl Command for CommandMoveTo {
+    fn handle(&self, world: &mut World) {
+        if self.object == 0 {
             *(world.pos_x.get_mut(&self.object).unwrap()) = self.destination_x;
             *(world.pos_y.get_mut(&self.object).unwrap()) = self.destination_y;
         }
@@ -51,21 +52,22 @@ impl Clone for Box<Command> {
 
 use std::collections::HashMap;
 pub struct World {
-    player_id: u32,
 
     pos_x: HashMap<u32, i32>,
     pos_y: HashMap<u32, i32>,
 
     commands: Box<Command>,
+
+    entities: Vec<u32>,
 }
 
 impl World {
     fn new () -> Self {
         World {
-            player_id: 0,
             pos_x: HashMap::new(),
             pos_y: HashMap::new(),
             commands: Box::new(CommandMoveTo::new(0,0,0)),
+            entities: Vec::new(),
         }
     }
     fn handle_commands(&mut self) {
@@ -76,7 +78,6 @@ impl World {
     }
 
     fn add_char(&mut self, id: u32, x: i32, y: i32) {
-        self.player_id = id;
         self.pos_x.entry(id).or_insert(x);
         self.pos_y.entry(id).or_insert(y);
     }
@@ -86,6 +87,40 @@ impl World {
     }
 
     fn player_coord(&mut self) -> (i32, i32) {
-        (*(self.pos_x.entry(self.player_id).or_insert(0)), *(self.pos_y.entry(self.player_id).or_insert(0)))
+        (*(self.pos_x.entry(0).or_insert(0)), *(self.pos_y.entry(0).or_insert(0)))
     }
 }
+
+
+extern crate sdl2;
+use sdl2::rect::Point;
+struct ResourceCollection {
+    postions: HashMap<u32, Point>,
+}
+
+impl ResourceCollection {
+    fn new() -> Self {
+        ResourceCollection {
+            postions: HashMap::new(),
+        }
+    }
+
+    fn add(&mut self, ent: u32, data: Point) {
+        self.postions.insert(ent, data);
+    }
+}
+
+struct CommandCollection {
+    cmd_move: HashMap<i32, CommandMoveTo>,
+}
+
+impl CommandCollection {
+    fn new() -> Self {
+        CommandCollection {
+            cmd_move: HashMap::new(),
+        }
+    }
+}
+
+
+
