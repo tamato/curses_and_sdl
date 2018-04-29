@@ -150,6 +150,7 @@ impl SDLContext {
 }
 
 struct TILE {
+    empty: Rect,
     floor: Rect,
     wall: Rect,
     chasm: Rect,
@@ -159,6 +160,7 @@ struct TILE {
 impl TILE {
     fn new() -> Self {
         TILE {
+            empty: Rect::new( TILE_WIDTH * 0, TILE_HEIGHT * 0, TILE_WIDTH as u32, TILE_HEIGHT as u32),
             floor: Rect::new( TILE_WIDTH *  7, TILE_HEIGHT *  0, TILE_WIDTH as u32, TILE_HEIGHT as u32),
             wall:  Rect::new( TILE_WIDTH * 11, TILE_HEIGHT * 13, TILE_WIDTH as u32, TILE_HEIGHT as u32),
             chasm: Rect::new( TILE_WIDTH *  0, TILE_HEIGHT *  0, TILE_WIDTH as u32, TILE_HEIGHT as u32),
@@ -172,6 +174,7 @@ impl Index<MapTileType> for TILE {
     type Output = Rect;
     fn index(&self, index: MapTileType) -> &Self::Output {
         match index {
+            MapTileType::Empty => &self.empty,
             MapTileType::Floor => &self.floor,
             MapTileType::Wall => &self.wall,
             MapTileType::Chasm => &self.chasm,

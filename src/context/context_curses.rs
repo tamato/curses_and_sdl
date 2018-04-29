@@ -113,6 +113,7 @@ impl ConsoleContext for CursesContext {
 }
 
 struct ASCII {
+    empty: char,
     floor: char,
     wall: char,
     chasm: char,
@@ -122,6 +123,7 @@ struct ASCII {
 impl ASCII {
     fn new() -> Self {
         ASCII {
+            empty: ' ',
             floor: '.',
             wall: '#',
             chasm: 'X',
@@ -135,6 +137,7 @@ impl Index<MapTileType> for ASCII {
     type Output = char;
     fn index(&self, index: MapTileType) -> &Self::Output {
         match index {
+            MapTileType::Empty => &self.empty,
             MapTileType::Floor => &self.floor,
             MapTileType::Wall => &self.wall,
             MapTileType::Chasm => &self.chasm,
