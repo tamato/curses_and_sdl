@@ -26,31 +26,25 @@ impl World {
     }
 }
 
-
 extern crate sdl2;
 use sdl2::rect::Point;
 pub struct ResourceCollection {
     positions: HashMap<u32, Point>,
-    dummy: HashMap<u32, i32>,
 }
 
 impl ResourceCollection {
     fn new() -> Self {
         ResourceCollection {
             positions: HashMap::new(),
-            dummy: HashMap::new(),
         }
     }
 
     fn add(&mut self, ent: u32, data: Point) {
         self.positions.insert(ent, data);
     }
-
-    fn add2(&mut self, ent: u32, data: i32) {
-        self.dummy.insert(ent, data);
-    }
 }
 
+// #[derive(Clone)]
 pub struct CommandCollection {
     cmd_move: Vec<CommandMoveTo>,
 }
@@ -94,8 +88,9 @@ impl CommandMoveTo {
 
 impl Command for CommandMoveTo {
     fn handle(&self, res: &mut ResourceCollection) {
-        *res.positions.get_mut(&0).unwrap() = self.destination;
+        *res.positions.get_mut(&self.object).unwrap() = self.destination;
     }
+
     fn cmd_clone(&self) -> Box<Command> {
         Box::new( (*self).clone())
     }

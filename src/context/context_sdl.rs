@@ -10,7 +10,7 @@ use self::sdl2::image::{LoadTexture, INIT_PNG};
 
 use context::ConsoleContext;
 use map_gen::{MapTileType, tcod_tutorial};
-use {World, CommandMoveTo, ResourceCollection, CommandCollection};
+use {World, CommandMoveTo, Command, ResourceCollection, CommandCollection};
 
 use std::cmp::{max, min};
 
@@ -29,7 +29,6 @@ impl ConsoleContext for SDLContext {
 
         let mut resources = ResourceCollection::new();
         let mut commands = CommandCollection::new();
-
 
         let sdl_context = sdl2::init().expect("Failed to create sdl_context");
         let video_subsystem = sdl_context.video().expect("Failed to get video_subsystem");
@@ -92,11 +91,16 @@ impl ConsoleContext for SDLContext {
                 }
             }
 
+            commands = CommandCollection::new();
             if got_input == true {
                 // world.add_command(CommandMoveTo::create((0, Point::new(player_x, player_y))));
                 commands.add(CommandMoveTo::new(0, player_x, player_y));
             }
-            // world.handle_commands();
+            
+            // handle commands
+            for cmd in commands.cmd_move {
+                cmd.handle(&mut resources);
+            }
 
             canvas.clear();
 
@@ -120,14 +124,13 @@ impl ConsoleContext for SDLContext {
                 }
             });
 
-            // let player_coord = world.player_coord();
-            let player_dest = Rect::new(0 * TILE_WIDTH, 0 * TILE_HEIGHT, TILE_WIDTH as u32, TILE_HEIGHT as u32);
+            let player_coord = resources.positions[&0];
+            let player_dest = Rect::new(player_coord.x * TILE_WIDTH, player_coord.y * TILE_HEIGHT, TILE_WIDTH as u32, TILE_HEIGHT as u32);
 
             // blank out where the character is
             let blank_rect = Rect::new(TILE_WIDTH *11, TILE_HEIGHT * 13, TILE_WIDTH as u32, TILE_HEIGHT as u32);
             texture22.set_color_mod(0,0,0);
             canvas.copy_ex(&texture22, Some(blank_rect), Some(player_dest), 0.0, None, false, false).expect("Failed to load player");
-
 
             texture22.set_color_mod(255, 255, 255);
             texture22.set_alpha_mod(255);
