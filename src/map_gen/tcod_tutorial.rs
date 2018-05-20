@@ -13,9 +13,11 @@ pub fn map_generation(width:usize, height:usize) -> MapData {
         height: height as u32,
         data: vec![MapTileType::Empty; (width * height)],
     };
-
     create_room(Rect::new(0,0,5,5), &mut map);
-    create_room(Rect::new(5,5,5,8), &mut map);
+
+    let x = width as i32 - 5;
+    let y = height as i32 - 7;
+    create_room(Rect::new(x, y,5,7), &mut map);
 
     map
 }
