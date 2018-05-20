@@ -46,18 +46,18 @@ impl ResourceCollection {
 
 // #[derive(Clone)]
 pub struct CommandCollection {
-    cmd_move: Vec<CommandMoveTo>,
+    cmds: Vec<Box<Command>>,
 }
 
 impl CommandCollection {
     fn new() -> Self {
         CommandCollection {
-            cmd_move: Vec::new(),
+            cmds: Vec::new(),
         }
     }
 
-    fn add(&mut self, data: CommandMoveTo) {
-        self.cmd_move.push(data);
+    fn add(&mut self, data: Box<Command>) {
+        self.cmds.push(data);
     }
 }
 

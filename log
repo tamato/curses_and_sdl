@@ -1,0 +1,162 @@
+commit be31e6254529216b8a5558fa49f9bd94ab21a5e0
+Author: terence amato <terence.amato@gmail.com>
+Date:   Thu May 3 22:51:34 2018 -0600
+
+    got the character moving in SDL
+
+commit d35820076ca045f0487b6d295b92dc99f9d4b896
+Author: terence amato <terence.amato@gmail.com>
+Date:   Tue Apr 17 13:48:59 2018 -0600
+
+    fuck this
+
+commit 87e287ad5b99546c094df672250163ecdce78bc2
+Author: terence amato <terence.amato@gmail.com>
+Date:   Tue Apr 17 13:06:20 2018 -0600
+
+    moving along
+
+commit 6edbe149f1e5a463bdddda3074de5cab72df004d
+Merge: b662f17 5a8376f
+Author: terence amato <terence.amato@gmail.com>
+Date:   Mon Apr 16 22:03:58 2018 -0600
+
+    Merge branch 'master' of github.com:tamato/curses_and_sdl
+
+commit b662f171359e0d729c47c14e8148a62d2c9db9d0
+Author: terence amato <terence.amato@gmail.com>
+Date:   Mon Apr 16 22:03:33 2018 -0600
+
+    stuff...
+
+commit 5a8376f31ae3565f5e1ea20c2be8276f3ebfe3c6
+Author: terry amato <terry.amato@mentice.com>
+Date:   Mon Apr 9 10:33:54 2018 -0600
+
+    added binaries for runnig windows and corrected cargo to include only what is being used.
+
+commit 21542952135db96331856a2a724fc5b9b189a17a
+Author: terence amato <terence.amato@gmail.com>
+Date:   Mon Apr 2 08:13:12 2018 -0600
+
+    added sdl for windows binaries
+
+commit 56824aef7ec03eefe38a23c75db6aaeae0431873
+Author: terence amato <terence.amato@gmail.com>
+Date:   Mon Apr 2 00:04:06 2018 -0600
+
+    events....not really
+
+commit e34f21068d255253a57cca62bdd641b8c145ff04
+Author: terence amato <terence.amato@gmail.com>
+Date:   Sun Apr 1 22:02:36 2018 -0600
+
+    clean up
+
+commit 625ecf37dbbb2e21ceff1c11a49b2297c72113cf
+Author: terence amato <terence.amato@gmail.com>
+Date:   Sun Apr 1 20:35:45 2018 -0600
+
+    fixed problem with map
+
+commit 1160186bbb10ca41141d90295ca223140fa45e8b
+Author: terence amato <terence.amato@gmail.com>
+Date:   Fri Mar 30 14:00:23 2018 -0600
+
+    progress
+
+commit 33512346a3670f3c6f1969d06888721ed53b777d
+Author: terence amato <terence.amato@gmail.com>
+Date:   Fri Mar 30 12:02:54 2018 -0600
+
+    code to use the new fonts, window size vs dungeon is mismatched
+
+commit 8ea64a5a92f35c7ecf0ab7ed68a235df7e834e9e
+Author: terence amato <terence.amato@gmail.com>
+Date:   Fri Mar 30 12:01:57 2018 -0600
+
+    added new fonts for sdl rendering
+
+commit 58a8961efb2c653e51ce4de2e9033d1198345c43
+Author: terence amato <terence.amato@gmail.com>
+Date:   Sun Mar 18 21:55:01 2018 -0600
+
+    bits of clean up
+
+commit 3be71679dbf71a550da0e915c4aea6e340225195
+Author: terence amato <terence.amato@gmail.com>
+Date:   Fri Mar 16 16:51:35 2018 -0600
+
+    player movement in sdl
+
+commit c84d4283bfbd638182d584b265eff0a43cca83e1
+Author: terence amato <terence.amato@gmail.com>
+Date:   Tue Mar 13 11:55:31 2018 -0600
+
+    working on getting the map to render at all
+
+commit 05d3b04fa8ee2406efe9636bbe7d40f2475a8f6a
+Author: terence amato <terence.amato@gmail.com>
+Date:   Sat Mar 10 20:51:06 2018 -0700
+
+    fixed issue with enum, had to derive from Clone AND Copy to be able to get values out of barrowed conent
+
+commit 310163567d9a9317de3ef4b59a024e50ab4e2f8c
+Author: terence amato <terence.amato@gmail.com>
+Date:   Sat Mar 10 07:42:34 2018 -0700
+
+    clean up how console_ctx gets init'd
+
+commit f3ee379f645f1904a6bf6c49b9ae65a1d980ec98
+Author: terry amato <terry.amato@mentice.com>
+Date:   Fri Mar 9 13:18:33 2018 -0700
+
+    having fun
+
+commit c58904fc09f1124d725fe580971bdb3daa6f504e
+Author: terry amato <terry.amato@mentice.com>
+Date:   Fri Mar 9 13:10:09 2018 -0700
+
+    pathing issue caused by which directory 'cargo run' was being called from
+
+commit 20de833a85f6f5b01d248fc9af02933c96482346
+Author: terry amato <terry.amato@mentice.com>
+Date:   Fri Mar 9 13:08:32 2018 -0700
+
+    missed
+
+commit 75730cc18e1bd72eb658bcf626ca2a44c3505f9d
+Author: terry amato <terry.amato@mentice.com>
+Date:   Fri Mar 9 13:08:00 2018 -0700
+
+    got things into their own modules.
+
+commit b9f05dcd9d0083c48b12df76d24adc7ce968414e
+Author: terry amato <terry.amato@mentice.com>
+Date:   Fri Mar 9 10:45:45 2018 -0700
+
+    stuff
+
+commit 2f271fe508d97a0e987ddb9f6383502e08da0228
+Author: terry amato <terry.amato@mentice.com>
+Date:   Fri Mar 9 10:38:26 2018 -0700
+
+    breaking them up some more
+
+commit c9477efcf27fcbd2c659b11dfd965914932c9873
+Author: terry amato <terry.amato@mentice.com>
+Date:   Fri Mar 9 10:17:30 2018 -0700
+
+    tra-la-laaa
+
+commit 75c116060f5526a6c06341900fead2a052b85072
+Author: terence amato <terence.amato@gmail.com>
+Date:   Thu Mar 8 21:38:36 2018 -0700
+
+    starting it
+
+commit 40b44a8fa30fab57edc7b86b1fabc292c8bc64ea
+Author: terry amato <terry.amato@mentice.com>
+Date:   Thu Mar 8 13:25:40 2018 -0700
+
+    init

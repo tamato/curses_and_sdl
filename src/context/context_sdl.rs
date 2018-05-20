@@ -91,16 +91,17 @@ impl ConsoleContext for SDLContext {
                 }
             }
 
-            commands = CommandCollection::new();
             if got_input == true {
-                // world.add_command(CommandMoveTo::create((0, Point::new(player_x, player_y))));
-                commands.add(CommandMoveTo::new(0, player_x, player_y));
+                let cmd = Box::new( CommandMoveTo::new(0, player_x, player_y) );
+                commands.add(cmd);
             }
             
             // handle commands
-            for cmd in commands.cmd_move {
+            let cmds = commands.cmds;
+            for cmd in cmds {
                 cmd.handle(&mut resources);
             }
+            commands = CommandCollection::new();
 
             canvas.clear();
 
